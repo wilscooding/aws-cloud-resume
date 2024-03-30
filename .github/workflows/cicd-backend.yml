@@ -27,7 +27,7 @@ jobs:
 
       - name: Package and deploy SAM application
         if: success()
-        run: sam deploy --template-file template.yaml --stack-name aws-cloud-resume --capabilities CAPABILITY_IAM
+        run: sam deploy --template-file template.yaml --stack-name aws-cloud-resume --capabilities CAPABILITY_IAM --confirm-changeset false
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
