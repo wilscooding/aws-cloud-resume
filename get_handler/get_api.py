@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 import json
 from boto3.dynamodb.conditions import Key
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('aws-cloud-resume')
 
 
