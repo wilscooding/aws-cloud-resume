@@ -1,17 +1,26 @@
-from unittest.mock import MagicMock
+import json
 import pytest
-from get_api import get_count
+from unittest.mock import MagicMock
+from get_handler.get_api import lambda_handler, table
 
+@pytest.fixture()
+def apigw_event():
+    """ Generates API GW Event for get-function"""
+    # Define event data for get-function
+    event = {
+        # Define event data here...
+    }
+    return event
 
-# Mocking DynamoDB table
-@pytest.fixture
-def dynamodb_table_mock():
-    table_mock = MagicMock()
-    table_mock.query.return_value = {
-        'Items': [{'visitors': 10}]}  # Mock response from DynamoDB
-    return table_mock
+def test_get_function_lambda_handler(apigw_event):
+    # Mock DynamoDB table query response
+    table.query = MagicMock(return_value={'Items': [{'visitors': 10}]})
 
+    # Call the lambda_handler function from get-function
+    ret = lambda_handler(apigw_event, "")
+    data = json.loads(ret["body"])
 
-def test_get_count_with_mock(dynamodb_table_mock):
-    count = get_count(dynamodb_table_mock)
-    assert count == 10  # Assert that the count matches the expected value
+    # Assert the response from the Lambda function
+    assert ret["statusCode"] == 200
+    assert "count" in ret["body"]
+    assert data["count"] == 10  # Change 10 to the expected count value

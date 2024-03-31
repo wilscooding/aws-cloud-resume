@@ -1,25 +1,17 @@
 import json
 import pytest
-
-from put-function.put-function import lambda_handler
-
-
-@pytest.fixture()
-def apigw_event():
-    """ Generates API GW Event for put-function"""
-    # Define event data for put-function
-    event = {
-        # Define event data here...
-    }
-    return event
+from unittest.mock import MagicMock
+from put_handler.put_api import lambda_handler, table
 
 
-def test_put_function_lambda_handler(apigw_event):
+def test_put_function_lambda_handler():
+    # Mock DynamoDB table update_item response
+    table.update_item = MagicMock()
+
     # Call the lambda_handler function from put-function
-    ret = lambda_handler(apigw_event, "")
-    data = json.loads(ret["body"])
+    ret = lambda_handler({}, "")
 
     # Assert the response from the Lambda function
     assert ret["statusCode"] == 200
     assert "message" in ret["body"]
-    # Add more assertions based on the expected behavior of your function
+    assert ret["body"]["message"] == "Visitor count updated successfully"

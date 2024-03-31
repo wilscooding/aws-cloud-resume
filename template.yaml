@@ -84,7 +84,7 @@ Resources:
   GetCountFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: get-function/
+      CodeUri: get_handler/
       Handler: get_api.lambda_handler
       Runtime: python3.10
       Architectures:
@@ -102,7 +102,7 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: cloud-resume-challenge
-      CodeUri: put-function/
+      CodeUri: put_handler/
       Handler: put_api.lambda_handler
       Runtime: python3.10
       Architectures:
