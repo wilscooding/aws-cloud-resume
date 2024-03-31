@@ -2,7 +2,7 @@ import requests
 
 
 def test_get_count_endpoint():
-    url = 'https://yfniwvuig9.execute-api.us-east-1.amazonaws.com/prod/get'
+    url = 'https://yfniwvuig9.execute-api.us-east-1.amazonaws.com/Prod/get'
     response = requests.get(url)
 
     # Check status code

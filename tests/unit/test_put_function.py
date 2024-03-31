@@ -11,7 +11,10 @@ def test_put_function_lambda_handler():
     # Call the lambda_handler function from put-function
     ret = lambda_handler({}, "")
 
+    # Parse the response body as JSON
+    response_body = json.loads(ret["body"])
+
     # Assert the response from the Lambda function
     assert ret["statusCode"] == 200
-    assert "message" in ret["body"]
-    assert ret["body"]["message"] == "Visitor count updated successfully"
+    assert "message" in response_body
+    assert response_body["message"] == "Visitor count updated successfully"
