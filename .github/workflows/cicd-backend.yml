@@ -22,8 +22,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run tests
-        run: export AWS_SAM_STACK_NAME=aws-cloud-resume
-          pytest
+        run: export AWS_SAM_STACK_NAME=aws-cloud-resume && pytest
 
       - name: Package and deploy SAM application
         if: success()
