@@ -1,74 +1,146 @@
+# AWSTemplateFormatVersion: "2010-09-09"
+# Transform: AWS::Serverless-2016-10-31
+# Description: >
+#   aws-cloud-resume
+
+#   Sample SAM Template for aws-cloud-resume
+
+# # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+# Globals:
+#   Function:
+#     Timeout: 3
+#     MemorySize: 128
+
+# Resources:
+#   MyWebsite:
+#     Type: AWS::S3::Bucket
+#     Properties:
+#       AccessControl: PublicRead
+#       WebsiteConfiguration:
+#         IndexDocument: index.html
+#       BucketName: wilkin-cloud-resume
+
+#   MyCertificate:
+#     Type: AWS::CertificateManager::Certificate
+#     Properties:
+#       DomainName: www.wilkinruiz.com
+#       ValidationMethod: DNS
+
+# MyDistribution:
+#   Type: AWS::CloudFront::Distribution
+#   Properties:
+#     DistributionConfig:
+#       ViewerCertificate:
+#         AcmCertificateArn: !Ref MyCertificate
+#         SslSupportMethod: sni-only
+#       Aliases:
+#         - www.wilkinruiz.com
+#       DefaultCacheBehavior:
+#         ViewerProtocolPolicy: redirect-to-https
+#         TargetOriginId: MyWebsiteOrigin
+#         DefaultTTL: 0
+#         MinTTL: 0
+#         MaxTTL: 0
+#         ForwardedValues:
+#           QueryString: false
+#       Origins:
+#         - DomainName: !GetAtt MyWebsite.WebsiteURL
+#           Id: MyWebsiteOrigin
+#           CustomOriginConfig:
+#             HTTPPort: 80
+#             HTTPSPort: 443
+#             OriginProtocolPolicy: https-only
+#       Enabled: "true"
+#       DefaultRootObject: index.html
+
+#   BucketPolicy:
+#     Type: AWS::S3::BucketPolicy
+#     Properties:
+#       PolicyDocument:
+#         Id: MyPolicy
+#         Version: 2012-10-17
+#         Statement:
+#           - Sid: PublicReadForGetBucketObjects
+#             Effect: Allow
+#             Principal: "*"
+#             Action: "s3:GetObject"
+#             Resource: !Join
+#               - ""
+#               - - "arn:aws:s3:::"
+#                 - !Ref MyWebsite
+#                 - /*
+#       Bucket: !Ref MyWebsite
+
+#   DynamoDBTable:
+#     Type: AWS::DynamoDB::Table
+#     Properties:
+#       TableName: aws-cloud-resume
+#       BillingMode: PAY_PER_REQUEST
+#       AttributeDefinitions:
+#         - AttributeName: "ID"
+#           AttributeType: "S"
+#       KeySchema:
+#         - AttributeName: "ID"
+#           KeyType: "HASH"
+
+#   GetCountFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       CodeUri: get_handler/
+#       Handler: get_api.lambda_handler
+#       Runtime: python3.10
+#       Architectures:
+#         - x86_64
+#       Events:
+#         HelloWorld:
+#           Type: Api
+#           Properties:
+#             Path: /get
+#             Method: get
+
+#   PutCountFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       Policies:
+#         - DynamoDBCrudPolicy:
+#             TableName: cloud-resume-challenge
+#       CodeUri: put_handler/
+#       Handler: put_api.lambda_handler
+#       Runtime: python3.10
+#       Architectures:
+#         - x86_64
+#       Events:
+#         HelloWorld:
+#           Type: Api
+#           Properties:
+#             Path: /put
+#             Method: get
+
+#   MyRoute53Record:
+#     Type: AWS::Route53::RecordSetGroup
+#     Properties:
+#       HostedZoneId: Z04670513H1U6E54JPN4L
+#       RecordSets:
+#         - Name: www.wilkinruiz.com
+#           Type: A
+#           AliasTarget:
+#             HostedZoneId: Z2FDTNDATAQYW2
+#             DNSName: !GetAtt MyDistribution.DomainName
+
+
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  aws-cloud-resume
+  aws-cloud-resume-backend
 
-  Sample SAM Template for aws-cloud-resume
+  Sample SAM Template for aws-cloud-resume backend
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
     MemorySize: 128
 
 Resources:
-  MyWebsite:
-    Type: AWS::S3::Bucket
-    Properties:
-      AccessControl: PublicRead
-      WebsiteConfiguration:
-        IndexDocument: index.html
-      BucketName: wilkin-cloud-resume
-
-  MyCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: www.wilkinruiz.com
-      ValidationMethod: DNS
-
-  MyDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        ViewerCertificate:
-          AcmCertificateArn: !Ref MyCertificate
-          SslSupportMethod: sni-only
-        Aliases:
-          - www.wilkinruiz.com
-        DefaultCacheBehavior:
-          ViewerProtocolPolicy: redirect-to-https
-          TargetOriginId: wilkin-cloud-resume.s3-website-us-east-1.amazonaws.com
-          DefaultTTL: 0
-          MinTTL: 0
-          MaxTTL: 0
-          ForwardedValues:
-            QueryString: false
-        Origins:
-          - DomainName: wilkin-cloud-resume.s3-website-us-east-1.amazonaws.com
-            Id: wilkin-cloud-resume.s3-website-us-east-1.amazonaws.com
-            CustomOriginConfig:
-              OriginProtocolPolicy: match-viewer
-        Enabled: "true"
-        DefaultRootObject: index.html
-
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      PolicyDocument:
-        Id: MyPolicy
-        Version: 2012-10-17
-        Statement:
-          - Sid: PublicReadForGetBucketObjects
-            Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
-            Resource: !Join
-              - ""
-              - - "arn:aws:s3:::"
-                - !Ref MyWebsite
-                - /*
-      Bucket: !Ref MyWebsite
-
   DynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -90,7 +162,7 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
+        ApiGatewayGet:
           Type: Api
           Properties:
             Path: /get
@@ -101,54 +173,39 @@ Resources:
     Properties:
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: cloud-resume-challenge
+            TableName: aws-cloud-resume
       CodeUri: put_handler/
       Handler: put_api.lambda_handler
       Runtime: python3.10
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
+        ApiGatewayPut:
           Type: Api
           Properties:
             Path: /put
-            Method: get
+            Method: post
 
-  MyRoute53Record:
-    Type: AWS::Route53::RecordSetGroup
+  MyApi:
+    Type: AWS::Serverless::Api
     Properties:
-      HostedZoneId: Z04670513H1U6E54JPN4L
-      RecordSets:
-        - Name: www.wilkinruiz.com
-          Type: A
-          AliasTarget:
-            HostedZoneId: Z2FDTNDATAQYW2
-            DNSName: !GetAtt MyDistribution.DomainName
-
-  # HelloWorldFunction:
-  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-  #   Properties:
-  #     CodeUri: hello_world/
-  #     Handler: app.lambda_handler
-  #     Runtime: python3.10
-  #     Architectures:
-  #       - x86_64
-  #     Events:
-  #       HelloWorld:
-  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-  #         Properties:
-  #           Path: /hello
-  #           Method: get
-# Outputs:
-#   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-#   # Find out more about other implicit resources you can reference within SAM
-#   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-#   HelloWorldApi:
-#     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-#     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-#   HelloWorldFunction:
-#     Description: "Hello World Lambda Function ARN"
-#     Value: !GetAtt HelloWorldFunction.Arn
-#   HelloWorldFunctionIamRole:
-#     Description: "Implicit IAM Role created for Hello World function"
-#     Value: !GetAtt HelloWorldFunctionRole.Arn
+      StageName: Prod
+      DefinitionBody:
+        openapi: "3.0.1"
+        info:
+          title: "Cloud Resume API"
+        paths:
+          /get:
+            get:
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCountFunction.Arn}/invocations
+                httpMethod: POST
+                type: aws_proxy
+          /put:
+            post:
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PutCountFunction.Arn}/invocations
+                httpMethod: POST
+                type: aws_proxy
